@@ -90,26 +90,50 @@ class ScoreServiceTest {
     }
 
     @Test
-    void testCalculateScore_win() throws ScorecardException {
+    void testCalculateTeamScore_win() throws ScorecardException {
         Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 1));
         assertEquals(3, scoreCardMap.get("FC Barcelona").getScore());
         assertEquals(0, scoreCardMap.get("Real Madrid").getScore());
     }
 
     @Test
-    void testCalculateScore_loss() throws ScorecardException {
+    void testCalculateTeamScore_loss() throws ScorecardException {
         Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 1), new Team("Real Madrid", 2));
         assertEquals(0, scoreCardMap.get("FC Barcelona").getScore());
         assertEquals(3, scoreCardMap.get("Real Madrid").getScore());
     }
 
     @Test
-    void testCalculateScore() throws ScorecardException {
+    void calculateTeamScore() throws ScorecardException {
         Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 2));
         Map<String, ScoreCard> scoreCardMap1 = scoreService.calculateTeamScore(scoreCardMap, new Team("FC Barcelona", 3), new Team("Man City", 1));
         assertEquals(4, scoreCardMap1.get("FC Barcelona").getScore());
         assertEquals(1, scoreCardMap1.get("Real Madrid").getScore());
         assertEquals(0, scoreCardMap1.get("Man City").getScore());
+    }
+
+    @Test
+    void testCalculateScoreCard() throws ScorecardException {
+        List<ScoreCard> scoreCardList = scoreService.calculateScoreCard("src/test/resources/input.txt");
+        assertEquals(5, scoreCardList.size());
+    }
+
+    @Test
+    void testCalculateScoreCard_Exception() throws ScorecardException {
+        Exception noFileException = assertThrows(ScorecardException.class, ()->scoreService.calculateScoreCard(""));
+        assertEquals("Please provide valid Input file", noFileException.getMessage());
+
+        Exception nullFileException = assertThrows(ScorecardException.class, ()->scoreService.calculateScoreCard(null));
+        assertEquals("Please provide valid Input file", nullFileException.getMessage());
+
+        Exception emptyInputsException = assertThrows(ScorecardException.class, ()->scoreService.calculateScoreCard("src/test/resources/emptyInput.txt"));
+        assertEquals("No Scores found in the input file", emptyInputsException.getMessage());
+
+        Exception inValidInputsException = assertThrows(ScorecardException.class, ()->scoreService.calculateScoreCard("src/test/resources/invalidInput.txt"));
+        assertEquals("Input is invalid. Please provide valid input Ex: Lions 3, Snakes 3", inValidInputsException.getMessage());
+
+        Exception inValidFileException = assertThrows(ScorecardException.class, ()->scoreService.calculateScoreCard("src/test/resources/invalidFile.txt"));
+        assertEquals("Input file path is not found. Please provide valid filepath", inValidFileException.getMessage());
     }
 
     public Collection<ScoreCard> getScoreCardCollection() {

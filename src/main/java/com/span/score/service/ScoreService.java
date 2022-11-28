@@ -16,8 +16,12 @@ public class ScoreService {
 
     private int rank = 0;
 
-    public Map<String, ScoreCard> calculateScoreCard(String filepath) throws ScorecardException {
+    public List<ScoreCard> calculateScoreCard(String filepath) throws ScorecardException {
+        if (null == filepath || filepath.isEmpty()) {
+            throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_FILE_PATH);
+        }
         Map<String, ScoreCard> scoreCardMap = new HashMap<>();
+        List<ScoreCard> scoreCardByRank = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String currentLine;
             while ((currentLine = br.readLine()) != null) {
@@ -33,13 +37,13 @@ public class ScoreService {
                 throw new ScorecardException(ScorecardConstants.MESSAGE_NO_SCORES_PROVIDED);
             }
 
-            List<ScoreCard> scoreCards = sortList(scoreCardMap.values());
-            printTeamsByRank(scoreCards);
+            List<ScoreCard> sortList = sortList(scoreCardMap.values());
+            scoreCardByRank = printTeamsByRank(sortList);
         } catch (IOException ioException) {
             if (ioException.getClass().equals(FileNotFoundException.class))
                 throw new ScorecardException(ScorecardConstants.MESSAGE_FILE_NOT_FOUND);
         }
-        return scoreCardMap;
+        return scoreCardByRank;
     }
 
     public Team getTeam(String teamString) throws ScorecardException {
@@ -49,7 +53,7 @@ public class ScoreService {
         }
         try {
             team.setName(teamString.substring(0, teamString.length() - 1).trim());
-            team.setPoints(Integer.valueOf(teamString.substring(teamString.length() - 1)));
+            team.setPoints(Integer.parseInt(teamString.substring(teamString.length() - 1)));
         } catch (Exception exception){
             throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_INPUT_FORMAT);
         }
