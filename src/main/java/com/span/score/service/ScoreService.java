@@ -4,7 +4,11 @@ import com.span.score.constants.ScorecardConstants;
 import com.span.score.domain.Team;
 import com.span.score.exception.ScorecardException;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScoreService {
 
@@ -22,28 +26,33 @@ public class ScoreService {
         if (teamMap == null) {
             throw new ScorecardException("");
         }
-        if(null == team1 || null == team2){
+        if (null == team1 || null == team2) {
             throw new ScorecardException("");
         }
-        if(team1.getScore() == team2.getScore()){
+        if (team1.getScore() == team2.getScore()) {
             updateScore(teamMap, team1, 1);
             updateScore(teamMap, team2, 1);
-        } else if(team1.getScore() > team2.getScore()){
+        } else if (team1.getScore() > team2.getScore()) {
             updateScore(teamMap, team1, 3);
             updateScore(teamMap, team2, 0);
-        } else{
+        } else {
             updateScore(teamMap, team1, 0);
             updateScore(teamMap, team2, 3);
         }
     }
 
-    public void updateScore(Map<String, Team> teamMap, Team team, int score){
-        if(teamMap.containsKey(team.getName())){
+    public void updateScore(Map<String, Team> teamMap, Team team, int score) {
+        if (teamMap.containsKey(team.getName())) {
             Team availableTeam = teamMap.get(team.getName());
             availableTeam.setScore(availableTeam.getScore() + score);
         } else {
             team.setScore(score);
             teamMap.put(team.getName(), team);
         }
+    }
+
+    public List<Team> sortList(Collection<Team> teamCollection) {
+        Comparator<Team> comparatorByScore = Comparator.comparing(Team::getScore).reversed().thenComparing(Team::getName);
+        return teamCollection.stream().sorted(comparatorByScore).collect(Collectors.toList());
     }
 }

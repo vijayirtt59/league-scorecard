@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -22,7 +23,7 @@ public class Main {
         String filepath = args[0];
         ScoreService scoreService = new ScoreService();
         Map<String, Team> teamMap = new HashMap<>();
-        try(BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String currentLine;
             while ((currentLine = br.readLine()) != null) {
                 String[] teams = currentLine.split(",");
@@ -33,10 +34,12 @@ public class Main {
                 Team team2 = scoreService.getTeam(teams[1]);
                 scoreService.calculateScore(teamMap, team1, team2);
             }
-            if(teamMap.size() == 0){
+            if (teamMap.size() == 0) {
                 throw new ScorecardException(ScorecardConstants.CODE_NO_SCORES_PROVIDED);
             }
-            for(Team team: teamMap.values()){
+
+            List<Team> sortedTeamByScore = scoreService.sortList(teamMap.values());
+            for (Team team : sortedTeamByScore) {
                 System.out.println(team);
             }
 
