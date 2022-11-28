@@ -1,6 +1,7 @@
 package com.span.score.service;
 
 import com.span.score.constants.ScorecardConstants;
+import com.span.score.domain.ScoreCard;
 import com.span.score.domain.Team;
 import com.span.score.exception.ScorecardException;
 
@@ -12,47 +13,65 @@ import java.util.stream.Collectors;
 
 public class ScoreService {
 
+    private int rank = 0;
+
     public Team getTeam(String teamString) throws ScorecardException {
         Team team = new Team();
-        if (teamString.isEmpty()) {
-            throw new ScorecardException(ScorecardConstants.CODE_INVALID_INPUT);
+        if (null == teamString || teamString.isEmpty()) {
+            throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_INPUT);
         }
-        team.setName(teamString.substring(0, teamString.length() - 1).trim());
-        team.setScore(Integer.valueOf(teamString.substring(teamString.length() - 1)));
+        try {
+            team.setName(teamString.substring(0, teamString.length() - 1).trim());
+            team.setPoints(Integer.valueOf(teamString.substring(teamString.length() - 1)));
+        } catch (Exception exception){
+            throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_INPUT_FORMAT);
+        }
+
         return team;
     }
 
-    public void calculateScore(Map<String, Team> teamMap, Team team1, Team team2) throws ScorecardException {
-        if (teamMap == null) {
-            throw new ScorecardException("");
+    public Map<String, ScoreCard> calculateScore(Map<String, ScoreCard> scoreCardMap, Team team1, Team team2) throws ScorecardException {
+        if (null == scoreCardMap || null == team1 || null == team2) {
+            throw new ScorecardException(ScorecardConstants.MESSAGE_CALCULATE_SCORES);
         }
-        if (null == team1 || null == team2) {
-            throw new ScorecardException("");
-        }
-        if (team1.getScore() == team2.getScore()) {
-            updateScore(teamMap, team1, 1);
-            updateScore(teamMap, team2, 1);
-        } else if (team1.getScore() > team2.getScore()) {
-            updateScore(teamMap, team1, 3);
-            updateScore(teamMap, team2, 0);
+        if (team1.getPoints() == team2.getPoints()) {
+            updateScore(scoreCardMap, team1, 1);
+            updateScore(scoreCardMap, team2, 1);
+        } else if (team1.getPoints() > team2.getPoints()) {
+            updateScore(scoreCardMap, team1, 3);
+            updateScore(scoreCardMap, team2, 0);
         } else {
-            updateScore(teamMap, team1, 0);
-            updateScore(teamMap, team2, 3);
+            updateScore(scoreCardMap, team1, 0);
+            updateScore(scoreCardMap, team2, 3);
         }
+        return scoreCardMap;
     }
 
-    public void updateScore(Map<String, Team> teamMap, Team team, int score) {
-        if (teamMap.containsKey(team.getName())) {
-            Team availableTeam = teamMap.get(team.getName());
+    private void updateScore(Map<String, ScoreCard> scoreCardMap, Team team, int score) {
+        if (scoreCardMap.containsKey(team.getName())) {
+            ScoreCard availableTeam = scoreCardMap.get(team.getName());
             availableTeam.setScore(availableTeam.getScore() + score);
         } else {
-            team.setScore(score);
-            teamMap.put(team.getName(), team);
+            scoreCardMap.put(team.getName(), new ScoreCard(team.getName(), score));
         }
     }
 
-    public List<Team> sortList(Collection<Team> teamCollection) {
-        Comparator<Team> comparatorByScore = Comparator.comparing(Team::getScore).reversed().thenComparing(Team::getName);
-        return teamCollection.stream().sorted(comparatorByScore).collect(Collectors.toList());
+    public List<ScoreCard> sortList(Collection<ScoreCard> scoreCardCollection) {
+        Comparator<ScoreCard> comparatorByScore = Comparator.comparing(ScoreCard::getScore).reversed().thenComparing(ScoreCard::getTeamName);
+        return scoreCardCollection.stream().sorted(comparatorByScore).collect(Collectors.toList());
+    }
+
+    public List<ScoreCard> printTeamsByRank(List<ScoreCard> scoreCardList){
+        int previousPts = 0;
+        for(ScoreCard scoreCard: scoreCardList){
+            int currentPts = scoreCard.getScore();
+            if(currentPts != previousPts){
+                rank++;
+            }
+            scoreCard.setRank(rank);
+            previousPts = currentPts;
+            System.out.println(scoreCard);
+        }
+        return scoreCardList;
     }
 }

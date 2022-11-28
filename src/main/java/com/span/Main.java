@@ -1,6 +1,7 @@
 package com.span;
 
 import com.span.score.constants.ScorecardConstants;
+import com.span.score.domain.ScoreCard;
 import com.span.score.domain.Team;
 import com.span.score.exception.ScorecardException;
 import com.span.score.service.ScoreService;
@@ -22,7 +23,7 @@ public class Main {
         }
         String filepath = args[0];
         ScoreService scoreService = new ScoreService();
-        Map<String, Team> teamMap = new HashMap<>();
+        Map<String, ScoreCard> scoreCardMap = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String currentLine;
             while ((currentLine = br.readLine()) != null) {
@@ -32,16 +33,15 @@ public class Main {
                 }
                 Team team1 = scoreService.getTeam(teams[0]);
                 Team team2 = scoreService.getTeam(teams[1]);
-                scoreService.calculateScore(teamMap, team1, team2);
+                scoreService.calculateScore(scoreCardMap, team1, team2);
             }
-            if (teamMap.size() == 0) {
+            if (scoreCardMap.size() == 0) {
                 throw new ScorecardException(ScorecardConstants.CODE_NO_SCORES_PROVIDED);
             }
 
-            List<Team> sortedTeamByScore = scoreService.sortList(teamMap.values());
-            for (Team team : sortedTeamByScore) {
-                System.out.println(team);
-            }
+            List<ScoreCard> scoreCards = scoreService.sortList(scoreCardMap.values());
+
+            scoreService.printTeamsByRank(scoreCards);
 
         } catch (IOException ioException) {
             if (ioException.getClass().equals(FileNotFoundException.class))

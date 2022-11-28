@@ -13,6 +13,11 @@ public class ScorecardConstants {
     public static final String CODE_INVALID_INPUT = "SCORE_CARD_EXP_03";
     public static final String MESSAGE_INVALID_INPUT = "Input is invalid. Please provide valid input Ex: Lions 3, Snakes 3";
 
-    public static final String CODE_NO_SCORES_PROVIDED = "SCORE_CARD_EXP_04";
+    public static final String CODE_INVALID_INPUT_FORMAT = "SCORE_CARD_EXP_04";
+    public static final String MESSAGE_INVALID_INPUT_FORMAT = "Input format is invalid. Please provide valid input Ex: Lions 3";
+    public static final String CODE_NO_SCORES_PROVIDED = "SCORE_CARD_EXP_05";
     public static final String MESSAGE_NO_SCORES_PROVIDED = "No Scores found in the input file";
+
+    public static final String CODE_CALCULATE_SCORES = "SCORE_CARD_EXP_06";
+    public static final String MESSAGE_CALCULATE_SCORES = "Invalid inputs to calculate score";
 }

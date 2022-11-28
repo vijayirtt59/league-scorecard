@@ -2,7 +2,16 @@ package com.span.score.domain;
 
 public class Team {
     private String name;
-    private int score;
+    private int points;
+
+
+    public Team() {
+    }
+
+    public Team(String name, int points) {
+        this.name = name;
+        this.points = points;
+    }
 
     public String getName() {
         return name;
@@ -12,19 +21,19 @@ public class Team {
         this.name = name;
     }
 
-    public int getScore() {
-        return score;
+    public int getPoints() {
+        return points;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     @Override
     public String toString() {
-        if(score == 1){
-            return name + ", "+score + " pt";
-        }
-        return name + ", " +score + " pts";
+        return "Team{" +
+                "name='" + name + '\'' +
+                ", points=" + points +
+                '}';
     }
 }
