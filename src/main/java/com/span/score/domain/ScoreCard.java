@@ -1,5 +1,8 @@
 package com.span.score.domain;
 
+/**
+ * Output Domain
+ */
 public class ScoreCard {
     private String teamName;
     private int score;

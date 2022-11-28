@@ -1,5 +1,8 @@
 package com.span.score.domain;
 
+/**
+ * Input Domain
+ */
 public class Team {
     private String name;
     private int points;
