@@ -91,22 +91,22 @@ class ScoreServiceTest {
 
     @Test
     void testCalculateScore_win() throws ScorecardException {
-        Map<String, ScoreCard> scoreCardMap = scoreService.calculateScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 1));
+        Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 1));
         assertEquals(3, scoreCardMap.get("FC Barcelona").getScore());
         assertEquals(0, scoreCardMap.get("Real Madrid").getScore());
     }
 
     @Test
     void testCalculateScore_loss() throws ScorecardException {
-        Map<String, ScoreCard> scoreCardMap = scoreService.calculateScore(new HashMap<>(), new Team("FC Barcelona", 1), new Team("Real Madrid", 2));
+        Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 1), new Team("Real Madrid", 2));
         assertEquals(0, scoreCardMap.get("FC Barcelona").getScore());
         assertEquals(3, scoreCardMap.get("Real Madrid").getScore());
     }
 
     @Test
     void testCalculateScore() throws ScorecardException {
-        Map<String, ScoreCard> scoreCardMap = scoreService.calculateScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 2));
-        Map<String, ScoreCard> scoreCardMap1 = scoreService.calculateScore(scoreCardMap, new Team("FC Barcelona", 3), new Team("Man City", 1));
+        Map<String, ScoreCard> scoreCardMap = scoreService.calculateTeamScore(new HashMap<>(), new Team("FC Barcelona", 2), new Team("Real Madrid", 2));
+        Map<String, ScoreCard> scoreCardMap1 = scoreService.calculateTeamScore(scoreCardMap, new Team("FC Barcelona", 3), new Team("Man City", 1));
         assertEquals(4, scoreCardMap1.get("FC Barcelona").getScore());
         assertEquals(1, scoreCardMap1.get("Real Madrid").getScore());
         assertEquals(0, scoreCardMap1.get("Man City").getScore());

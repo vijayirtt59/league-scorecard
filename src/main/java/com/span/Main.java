@@ -19,35 +19,11 @@ public class Main {
 
     public static void main(String[] args) throws ScorecardException {
         if (null == args || args.length == 0) {
-            throw new ScorecardException(ScorecardConstants.CODE_INVALID_FILE_PATH);
+            throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_FILE_PATH);
         }
         String filepath = args[0];
         ScoreService scoreService = new ScoreService();
-        Map<String, ScoreCard> scoreCardMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
-            String currentLine;
-            while ((currentLine = br.readLine()) != null) {
-                String[] teams = currentLine.split(",");
-                if (null == teams || teams.length != 2) {
-                    throw new ScorecardException(ScorecardConstants.CODE_INVALID_INPUT);
-                }
-                Team team1 = scoreService.getTeam(teams[0]);
-                Team team2 = scoreService.getTeam(teams[1]);
-                scoreService.calculateScore(scoreCardMap, team1, team2);
-            }
-            if (scoreCardMap.size() == 0) {
-                throw new ScorecardException(ScorecardConstants.CODE_NO_SCORES_PROVIDED);
-            }
-
-            List<ScoreCard> scoreCards = scoreService.sortList(scoreCardMap.values());
-
-            scoreService.printTeamsByRank(scoreCards);
-
-        } catch (IOException ioException) {
-            if (ioException.getClass().equals(FileNotFoundException.class))
-                throw new ScorecardException(ScorecardConstants.CODE_FILE_NOT_FOUND);
-        }
-
+        scoreService.calculateScoreCard(filepath);
     }
 
 

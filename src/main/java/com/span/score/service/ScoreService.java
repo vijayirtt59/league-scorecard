@@ -5,15 +5,42 @@ import com.span.score.domain.ScoreCard;
 import com.span.score.domain.Team;
 import com.span.score.exception.ScorecardException;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ScoreService {
 
     private int rank = 0;
+
+    public Map<String, ScoreCard> calculateScoreCard(String filepath) throws ScorecardException {
+        Map<String, ScoreCard> scoreCardMap = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+            String currentLine;
+            while ((currentLine = br.readLine()) != null) {
+                String[] teams = currentLine.split(",");
+                if (null == teams || teams.length != 2) {
+                    throw new ScorecardException(ScorecardConstants.MESSAGE_INVALID_INPUT);
+                }
+                Team team1 = getTeam(teams[0]);
+                Team team2 = getTeam(teams[1]);
+                calculateTeamScore(scoreCardMap, team1, team2);
+            }
+            if (scoreCardMap.size() == 0) {
+                throw new ScorecardException(ScorecardConstants.MESSAGE_NO_SCORES_PROVIDED);
+            }
+
+            List<ScoreCard> scoreCards = sortList(scoreCardMap.values());
+            printTeamsByRank(scoreCards);
+        } catch (IOException ioException) {
+            if (ioException.getClass().equals(FileNotFoundException.class))
+                throw new ScorecardException(ScorecardConstants.MESSAGE_FILE_NOT_FOUND);
+        }
+        return scoreCardMap;
+    }
 
     public Team getTeam(String teamString) throws ScorecardException {
         Team team = new Team();
@@ -30,7 +57,7 @@ public class ScoreService {
         return team;
     }
 
-    public Map<String, ScoreCard> calculateScore(Map<String, ScoreCard> scoreCardMap, Team team1, Team team2) throws ScorecardException {
+    public Map<String, ScoreCard> calculateTeamScore(Map<String, ScoreCard> scoreCardMap, Team team1, Team team2) throws ScorecardException {
         if (null == scoreCardMap || null == team1 || null == team2) {
             throw new ScorecardException(ScorecardConstants.MESSAGE_CALCULATE_SCORES);
         }
